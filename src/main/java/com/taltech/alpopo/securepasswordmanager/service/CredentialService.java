@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,15 +49,10 @@ public class CredentialService {
                 .collect(Collectors.toList());
     }
 
-    public CredentialDTO getCredentialById(Long id, String masterPassword) {
+    public Optional<Credential> getCredentialById(Long id, String masterPassword) {
         Credential credential = credentialRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Credential not found with id: " + id));
-        return CredentialDTO.builder()
-                .id(credential.getId())
-                .serviceName(credential.getServiceName())
-                .serviceUsername(credential.getServiceUsername())
-                .decryptedPassword(encryptionUtil.decrypt(credential.getEncryptedPassword(), masterPassword))
-                .build();
+        return Optional.ofNullable(credential);
     }
 
     public Credential updateCredential(Credential credential,

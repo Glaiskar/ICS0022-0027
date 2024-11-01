@@ -2,10 +2,10 @@ package com.taltech.alpopo.securepasswordmanager.config;
 
 import com.taltech.alpopo.securepasswordmanager.security.JwtAuthenticationEntryPoint;
 import com.taltech.alpopo.securepasswordmanager.security.JwtRequestFilter;
-import com.taltech.alpopo.securepasswordmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,15 +21,12 @@ public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtRequestFilter jwtRequestFilter;
-    private final UserService userService;
 
     @Autowired
     public SecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                          JwtRequestFilter jwtRequestFilter,
-                          UserService userService) {
+                          @Lazy JwtRequestFilter jwtRequestFilter) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtRequestFilter = jwtRequestFilter;
-        this.userService = userService;
     }
 
     @Bean
