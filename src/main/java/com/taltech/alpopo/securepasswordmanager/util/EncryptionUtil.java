@@ -1,7 +1,6 @@
 package com.taltech.alpopo.securepasswordmanager.util;
 
 import org.jasypt.util.text.AES256TextEncryptor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component

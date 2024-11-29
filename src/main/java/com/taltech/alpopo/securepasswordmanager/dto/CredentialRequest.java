@@ -11,4 +11,6 @@ public class CredentialRequest {
     private String serviceUsername;
     @NotBlank
     private String password;
+    @NotBlank
+    private String masterPassword;
 }

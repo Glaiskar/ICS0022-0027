@@ -1,19 +1,15 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { getToken, setToken, clearToken } from '../utils/tokenUtils';
-import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import {JwtPayload} from "../types/JwtPayload";
+import api from '../services/api';
 
 interface AuthContextType {
-    token: string | null;
     isAuthenticated: boolean;
-    login: (token: string) => void;
+    login: () => void;
     logout: () => void;
-    user: JwtPayload | null;
+    user: string | null;
 }
 
 export const AuthContext = createContext<AuthContextType>({
-    token: null,
     isAuthenticated: false,
     login: () => {},
     logout: () => {},
@@ -21,47 +17,37 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [authToken, setAuthToken] = useState<string | null>(getToken());
-    const [user, setUser] = useState<JwtPayload | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+        const storedAuth = sessionStorage.getItem('isAuthenticated');
+        return storedAuth === 'true';
+    });    const [user, setUser] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (authToken) {
-            try {
-                const decoded = jwtDecode<JwtPayload>(authToken);
-                setUser(decoded);
-            } catch (error) {
-                console.error('Invalid token:', error)
-                logout();
-            }
-        } else {
+    const login = () => {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('isAuthenticated', 'true');
+        api.get('/auth/user-info').then(response => {
+            setUser(response.data.data);
+        }).catch(() => {
             setUser(null);
-        }
-    }, [authToken]);
+        });
+        navigate('/');
+    };
 
-    const login = (newToken: string) => {
-        setAuthToken(newToken);
-        setToken(newToken);
+    const logout = async () => {
         try {
-            const decoded = jwtDecode<JwtPayload>(newToken);
-            setUser(decoded);
+            await api.post('/auth/logout');
+            setIsAuthenticated(false);
+            setUser(null);
+            sessionStorage.removeItem('isAuthenticated');
+            navigate('/login');
         } catch (error) {
-            console.error('Invalid token:', error);
-            logout();
+            console.error('Failed to log out.');
         }
     };
-
-    const logout = () => {
-        clearToken();
-        setAuthToken(null);
-        setUser(null);
-        navigate('/login')
-    };
-
-    const isAuthenticated = !!authToken;
 
     return (
-        <AuthContext.Provider value={{ token: authToken, isAuthenticated, login, logout, user }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
             {children}
         </AuthContext.Provider>
     );

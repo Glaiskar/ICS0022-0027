@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,10 +50,21 @@ public class CredentialService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Credential> getCredentialById(Long id, String masterPassword) {
-        Credential credential = credentialRepository.findById(id)
+    public Optional<Credential> getCredentialById(String id) {
+        Credential credential = credentialRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Credential not found with id: " + id));
         return Optional.ofNullable(credential);
+    }
+
+    public Optional<CredentialDTO> getCredentialDTOById(String id, String masterPassword) {
+        Credential credential = credentialRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Credential not found with id: " + id));
+        return Optional.ofNullable(CredentialDTO.builder()
+                .id(credential.getId())
+                .serviceName(credential.getServiceName())
+                .serviceUsername(credential.getServiceUsername())
+                .decryptedPassword(encryptionUtil.decrypt(credential.getEncryptedPassword(), masterPassword))
+                .build());
     }
 
     public Credential updateCredential(Credential credential,
@@ -67,7 +79,7 @@ public class CredentialService {
         return credentialRepository.save(credential);
     }
 
-    public void deleteCredential(Long id) {
-        credentialRepository.deleteById(id);
+    public void deleteCredential(String id) {
+        credentialRepository.deleteById(UUID.fromString(id));
     }
 }
