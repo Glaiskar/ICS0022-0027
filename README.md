@@ -40,7 +40,7 @@ Ensure you have the following installed:
 ## **Clone the repository**
 Run the following command to clone the repository:
 ```bash
-it clone https://github.com/Glaiskar/ICS0022-0027.git
+git clone https://github.com/Glaiskar/ICS0022-0027.git
 cd ICS0022-0027
 ```
 
