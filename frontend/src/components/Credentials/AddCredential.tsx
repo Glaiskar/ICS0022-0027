@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { CredentialRequest } from '../../types/CredentialRequest';
 import { ApiResponse } from '../../types/ApiResponse';
+import DOMPurify from "dompurify";
 
 const AddCredential: React.FC = () => {
     const navigate = useNavigate();
@@ -28,6 +29,12 @@ const AddCredential: React.FC = () => {
                 if (!masterPassword) {
                     console.error('Master password is required.');
                     return;
+                }
+
+                for (const key in values) {
+                    if (values.hasOwnProperty(key)) {
+                        values[key as keyof CredentialRequest] = DOMPurify.sanitize(values[key as keyof CredentialRequest]);
+                    }
                 }
 
                 const body = {

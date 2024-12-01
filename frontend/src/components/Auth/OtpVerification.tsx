@@ -5,6 +5,7 @@ import api from '../../services/api';
 import { useLocation } from 'react-router-dom';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { AuthContext } from '../../contexts/AuthContext';
+import DOMPurify from "dompurify";
 
 interface LocationState {
     username: string;
@@ -26,7 +27,7 @@ const OtpVerification: React.FC = () => {
             try {
                 const body = {
                     username: username,
-                    otp: values.otp,
+                    otp: DOMPurify.sanitize(values.otp),
                 };
 
                 const response = await api.post('/auth/verify-otp', body);

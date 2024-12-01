@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import {AuthenticationRequest} from "../../types/AuthenticationRequest";
+import DOMPurify from "dompurify";
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -23,6 +24,11 @@ const Login: React.FC = () => {
         }),
         onSubmit: async (values: AuthenticationRequest, { setSubmitting }: FormikHelpers<AuthenticationRequest>) => {
             try {
+                for (const key in values) {
+                    if (values.hasOwnProperty(key)) {
+                        values[key as keyof AuthenticationRequest] = DOMPurify.sanitize(values[key as keyof AuthenticationRequest]);
+                    }
+                }
                 const response = await api.post('/auth/login', values);
                 if (response.data.success) {
                     console.log(response.data.message);

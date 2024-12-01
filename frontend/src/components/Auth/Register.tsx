@@ -6,6 +6,7 @@ import api from "../../services/api";
 import {ApiResponse} from "../../types/ApiResponse";
 import {Box, Button, Container, TextField, Typography} from "@mui/material";
 import {RegisterRequest} from "../../types/RegisterRequest";
+import DOMPurify from "dompurify";
 
 const Register: React.FC = () => {
     const navigate = useNavigate();
@@ -27,6 +28,11 @@ const Register: React.FC = () => {
         }),
         onSubmit: async (values: RegisterRequest, { setSubmitting }: FormikHelpers<RegisterRequest>) => {
             try {
+                for (const key in values) {
+                    if (values.hasOwnProperty(key)) {
+                        values[key as keyof RegisterRequest] = DOMPurify.sanitize(values[key as keyof RegisterRequest]);
+                    }
+                }
                 const response = await api.post<ApiResponse<string>>('/auth/register', values);
                 if (response.data.success) {
                     console.log(response.data.message);
