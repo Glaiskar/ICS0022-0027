@@ -90,6 +90,15 @@ REACT_APP_API_URL=https://localhost:8443/api
    You will be prompted to enter a keystore password, your name, organization, and location. Remember the keystore password as it will be used in the backend `.env` file.
 2. Place the `keystore.p12` file in the `src/main/resources` directory.
 3. Update the `KEYSTORE_PASSWORD` in the backend `.env` file with the keystore password.
+4. (Windows only) Place `DANGEROUSLY_DISABLE_HOST_CHECK=true` into your `frontend/.env` file and in `frontend/package.json`:
+   change `"scripts": {
+    "start": "HTTPS=true react-scripts start",`
+   to `"scripts": {
+    "start": "set HTTPS=true&& react-scripts start",`
+   and after the `scripts` object add an `options` object with the following content:
+   `"options": {
+    "allowedHosts": ["localhost", ".localhost"]
+  },`
 ---
 ## **Backend Setup**
 1. Navigate to the root directory:
