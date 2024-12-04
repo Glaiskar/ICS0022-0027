@@ -40,6 +40,8 @@ public class SecurityConfig {
                 )
                 .csrf(AbstractHttpConfigurer::disable
                 )
+                .headers(header -> header.contentSecurityPolicy(config ->
+                        config.policyDirectives("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; frame-ancestors 'none';")))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
